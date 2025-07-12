@@ -13,7 +13,7 @@ class EmployeelistLoading extends EmployeeListState {}
 class EmployeelistLoaded extends EmployeeListState {
   final List<EmpModel>? emps;
   final List<EmpModel>? searchEmps;
-  const EmployeelistLoaded(this.emps, this.searchEmps);
+  const EmployeelistLoaded({this.emps, this.searchEmps});
   @override
   // TODO: implement props
   List<Object?> get props => [emps, searchEmps];

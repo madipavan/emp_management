@@ -1,5 +1,6 @@
 import 'package:employee_management/core/theme/app_colors.dart';
 import 'package:employee_management/presentation/home/bloc/employee_list_bloc.dart';
+import 'package:employee_management/presentation/home/widget/add_emp_widget.dart';
 import 'package:employee_management/presentation/model/emp_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,60 +22,71 @@ class _EmpListScreenState extends State<EmpListScreen> {
   final scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: AppColors.scaffoldBg,
-      floatingActionButton: Builder(
-        builder: (context) {
-          return _floatingActionButton(context, () {
-            Scaffold.of(context).showBottomSheet((context) {
-              return _bottomSheet(context);
-            });
-          });
-        },
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        surfaceTintColor: Colors.blue,
-        leading: Icon(Icons.arrow_back_ios),
-        title: Text('Employee list'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        child: ListView(
-          children: [
-            Row(children: [_customSearchField(context)]),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              child: BlocBuilder<EmployeeListBloc, EmployeeListState>(
-                builder: (context, state) {
-                  if (state is EmployeelistLoaded) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: state.searchEmps!.length,
-                        itemBuilder: (context, index) {
-                          return _empListTile(state.searchEmps![index]);
-                        },
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 15),
-                      ),
-                    );
-                  } else if (state is EmployeelistLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(color: Colors.blue),
-                    );
-                  } else if (state is EmployeelistError) {
-                    return Text('Error');
-                  } else {
-                    return Text('Error');
-                  }
-                },
-              ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) => {
+        didPop ? _showdialog(context) : null,
+      },
+      child: Scaffold(
+        key: scaffoldKey,
+
+        backgroundColor: AppColors.scaffoldBg,
+        floatingActionButton: _floatingActionButton(context, () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => SizedBox(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height / 2,
+              child: AddEmpWidget(),
             ),
-          ],
+          );
+        }),
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          surfaceTintColor: Colors.blue,
+          leading: Icon(Icons.arrow_back_ios, color: Colors.white),
+          title: Text('Employee list', style: TextStyle(color: Colors.white)),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          child: ListView(
+            children: [
+              Row(children: [_customSearchField(context)]),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
+                child: BlocBuilder<EmployeeListBloc, EmployeeListState>(
+                  builder: (context, state) {
+                    if (state is EmployeelistLoaded) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: state.searchEmps!.length,
+                          itemBuilder: (context, index) {
+                            return _empListTile(state.searchEmps![index]);
+                          },
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 15),
+                        ),
+                      );
+                    } else if (state is EmployeelistLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(color: Colors.blue),
+                      );
+                    } else if (state is EmployeelistError) {
+                      return Text('Error');
+                    } else {
+                      return Text('Error');
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -179,8 +191,18 @@ Widget _bottomSheet(BuildContext context) {
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height / 2,
     ),
+
     onClosing: () {},
     shape: RoundedRectangleBorder(),
     builder: (context) => Column(),
+  );
+}
+
+Future<void> _showdialog(context) async {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog();
+    },
   );
 }

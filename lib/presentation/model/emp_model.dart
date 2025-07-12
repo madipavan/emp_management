@@ -40,4 +40,20 @@ class EmpModel {
       department: emp['position'] ?? 'No department',
     );
   }
+
+  Map toMap() {
+    return {
+      'createdAt': createdAt,
+      'name': name,
+      'avatar': avatar,
+      'emailId': emailId,
+      'mobile': mobile,
+      'country': country,
+      'state': state,
+      'district': district,
+      'id': id,
+      'position': position,
+      'department': department,
+    };
+  }
 }

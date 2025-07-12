@@ -11,7 +11,7 @@ class EmployeesDataService {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = jsonDecode(response.body);
         List<EmpModel> emps = [];
 
         //converting into model
@@ -25,5 +25,19 @@ class EmployeesDataService {
       throw Exception(e.toString());
     }
     return null;
+  }
+
+  Future addEmployee(EmpModel emp) async {
+    final url = AppUrls.addEmpusrl;
+    try {
+      await http.post(
+        Uri.parse(url),
+        body: jsonEncode(emp.toMap()),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (e) {
+      debugPrint('Error In AddEmpService:${e.toString()}');
+      throw Exception(e.toString());
+    }
   }
 }
