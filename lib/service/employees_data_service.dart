@@ -11,13 +11,14 @@ class EmployeesDataService {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        List<dynamic> data = jsonDecode(response.body);
         List<EmpModel> emps = [];
 
         //converting into model
         for (var element in data) {
           emps.add(EmpModel.fromJson(element));
         }
+
         return emps;
       }
     } catch (e) {

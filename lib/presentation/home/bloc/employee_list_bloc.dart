@@ -13,6 +13,7 @@ class EmployeeListBloc extends Bloc<EmployeeListEvent, EmployeeListState> {
       emit(EmployeelistLoading());
       try {
         final emps = await EmployeesDataService().fetchEmployees();
+        print(emps!.length);
         emit(EmployeelistLoaded(emps: emps, searchEmps: emps));
       } catch (e) {
         emit(EmployeelistError(e.toString()));

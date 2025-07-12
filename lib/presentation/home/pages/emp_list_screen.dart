@@ -148,7 +148,9 @@ Widget _empListTile(EmpModel emp) {
     tileColor: Colors.white,
     leading: ClipRRect(
       borderRadius: BorderRadiusGeometry.circular(50),
-      child: Image.network(emp.avatar),
+      child: emp.avatar.isEmpty
+          ? Text(emp.name[0].toUpperCase(), style: TextStyle(fontSize: 16))
+          : Image.network(emp.avatar),
     ),
     title: Text(
       emp.name,
@@ -182,19 +184,6 @@ Widget _empListTile(EmpModel emp) {
         color: Colors.grey.shade800,
       ),
     ),
-  );
-}
-
-Widget _bottomSheet(BuildContext context) {
-  return BottomSheet(
-    backgroundColor: Colors.white,
-    constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height / 2,
-    ),
-
-    onClosing: () {},
-    shape: RoundedRectangleBorder(),
-    builder: (context) => Column(),
   );
 }
 
