@@ -18,11 +18,21 @@ class _EmpListScreenState extends State<EmpListScreen> {
     super.initState();
   }
 
+  final scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: AppColors.scaffoldBg,
-      floatingActionButton: _floatingActionButton(context),
+      floatingActionButton: Builder(
+        builder: (context) {
+          return _floatingActionButton(context, () {
+            Scaffold.of(context).showBottomSheet((context) {
+              return _bottomSheet(context);
+            });
+          });
+        },
+      ),
       appBar: AppBar(
         backgroundColor: Colors.blue,
         surfaceTintColor: Colors.blue,
@@ -35,17 +45,14 @@ class _EmpListScreenState extends State<EmpListScreen> {
         child: ListView(
           children: [
             Row(children: [_customSearchField(context)]),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 500),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 14,
-                ),
-                child: BlocBuilder<EmployeeListBloc, EmployeeListState>(
-                  builder: (context, state) {
-                    if (state is EmployeelistLoaded) {
-                      return ListView.separated(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              child: BlocBuilder<EmployeeListBloc, EmployeeListState>(
+                builder: (context, state) {
+                  if (state is EmployeelistLoaded) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: ListView.separated(
                         shrinkWrap: true,
                         itemCount: state.searchEmps!.length,
                         itemBuilder: (context, index) {
@@ -53,22 +60,18 @@ class _EmpListScreenState extends State<EmpListScreen> {
                         },
                         separatorBuilder: (context, index) =>
                             SizedBox(height: 15),
-                      );
-                    } else if (state is EmployeelistLoading) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (state is EmployeelistError) {
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //   SnackBar(content: Text('Error In Loading Data')),
-                      // );
-                      return Text('Error');
-                    } else {
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //   SnackBar(content: Text('Error In Loading Data')),
-                      // );
-                      return Text('Error');
-                    }
-                  },
-                ),
+                      ),
+                    );
+                  } else if (state is EmployeelistLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(color: Colors.blue),
+                    );
+                  } else if (state is EmployeelistError) {
+                    return Text('Error');
+                  } else {
+                    return Text('Error');
+                  }
+                },
               ),
             ),
           ],
@@ -107,16 +110,12 @@ Widget _customSearchField(BuildContext context) {
   );
 }
 
-Widget _floatingActionButton(BuildContext context) {
+Widget _floatingActionButton(BuildContext context, Function() onPressed) {
   return SizedBox(
     width: 140,
     child: FloatingActionButton(
       backgroundColor: Colors.blue,
-      onPressed: () {
-        Scaffold.of(context).showBottomSheet((context) {
-          return Text('data');
-        });
-      },
+      onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
@@ -171,5 +170,17 @@ Widget _empListTile(EmpModel emp) {
         color: Colors.grey.shade800,
       ),
     ),
+  );
+}
+
+Widget _bottomSheet(BuildContext context) {
+  return BottomSheet(
+    backgroundColor: Colors.white,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(context).size.height / 2,
+    ),
+    onClosing: () {},
+    shape: RoundedRectangleBorder(),
+    builder: (context) => Column(),
   );
 }
